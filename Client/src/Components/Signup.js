@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom'
 import swal from 'sweetalert';
 import "./Signup.css"
@@ -6,7 +6,9 @@ import Spinner from './Spinner'
 
 const Signup = () => {
     const History = useNavigate()
-
+    useEffect(() => {
+        document.title = "Sign up"
+    })
     const [loading, setLoading] = useState(false)
     const [user, setUser] = useState({
         name: "",
@@ -20,9 +22,9 @@ const Signup = () => {
 
     })
     const showAlert = (message, bg) => {
-    
+
         setTimeout(() => {
-       
+
         }, 3000);
     }
 
@@ -37,7 +39,7 @@ const Signup = () => {
                 showAlert("Invalid Creadential", "#FFBABA")
             }
             else {
-          
+
                 setLoading(true)
                 const res = await fetch("/signup", {
                     method: "POST",
@@ -96,7 +98,7 @@ const Signup = () => {
 
     return (
         <>
-         
+
             <div className="container">
                 <div className="box" style={{ padding: '15px', boxShadow: "0 12px 16px 0 rgba(0, 0, 0, 0.2)" }}>
 

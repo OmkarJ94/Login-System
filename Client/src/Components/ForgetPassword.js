@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {  useNavigate } from "react-router-dom";
 import swal from 'sweetalert';
 import ConfirmedPassword from "./ConfirmedPassword";
@@ -8,6 +8,9 @@ const Changepassword = () => {
     const [email, setEmail] = useState();
     const [loading, setLoading] = useState(false);
     const [form, setform] = useState(true);
+    useEffect(() => {
+        document.title = "Forgot Password"
+    })
     const History = useNavigate();
     const checkUser = async (e) => {
         e.preventDefault();

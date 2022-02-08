@@ -38,28 +38,29 @@ const Informationone = () => {
 
 
             if (res.status !== 200) {
-        
+
                 swal({
                     title: "Oops...!",
-                    text:"Something Went Wrong",
+                    text: "Something Went Wrong",
                     icon: "error",
                 })
             }
         } catch (error) {
 
             History("/login");
-       
+
             swal({
                 title: "Oops...!",
-                text:"You Must Be Logged In To View Profile Page",
+                text: "You Must Be Logged In To View Profile Page",
                 icon: "error",
             })
-   
+
         }
     };
     // eslint-disable-next-line
     useEffect(() => {
         fetchdata();
+        document.title = "Profile Page"
         // eslint-disable-next-line
     }, []);
     const logout = async () => {
@@ -86,7 +87,7 @@ const Informationone = () => {
     };
     return (
         <>
-      
+
             <div className="container" >
                 <div className="box" style={{ padding: '60px', boxShadow: "0 12px 16px 0 rgba(0, 0, 0, 0.2)" }}>
                     <h1>User Information</h1>

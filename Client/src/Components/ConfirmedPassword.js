@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import Spinner from "./Spinner";
@@ -11,6 +11,9 @@ const ConfirmedPassword = (props) => {
         password: "",
         cpassword: "",
     });
+    useEffect(() => {
+        document.title = "Forgot Password"
+    })
     const History = useNavigate();
     const handleInputs = (e) => {
         let name = e.target.name;
@@ -39,11 +42,11 @@ const ConfirmedPassword = (props) => {
                         password: data.password,
                     }),
                 });
-      
+
                 if (response.status === 404 || !response) {
 
                     setLoading(false);
-          
+
                     swal({
                         title: "Oops...!",
                         text: "Enter Valid Data Check All Fields",
@@ -51,14 +54,14 @@ const ConfirmedPassword = (props) => {
                     })
                 } else if (response.status === 401) {
                     setLoading(false);
-                 swal({
+                    swal({
                         title: "Oops...!",
                         text: "Your OTP Expired! Please Try Again",
                         icon: "error",
                     })
                 } else if (response.status === 200) {
                     setLoading(false);
-          
+
                     swal({
                         title: "Good",
                         text: "Your Password has been updated successfully",

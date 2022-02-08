@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import "./Signup.css"
 import swal from 'sweetalert';
 import { NavLink } from "react-router-dom"
@@ -9,7 +9,9 @@ import Spinner from './Spinner'
 const Login = () => {
     const History = useNavigate()
     const [email, setEmail] = useState("");
-
+    useEffect(() => {
+        document.title = "Log In"
+    })
     const [loading, setLoading] = useState(false)
     const [password, setPassword] = useState("");
 

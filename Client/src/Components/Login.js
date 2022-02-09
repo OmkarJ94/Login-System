@@ -75,7 +75,7 @@ const Login = () => {
 
 
             <div className="container">
-                <div className="box" style={{ padding: '60px', boxShadow: "0 12px 16px 0 rgba(0, 0, 0, 0.2)" }}>
+                <div className="box" style={{ padding: '15px', boxShadow: "0 12px 16px 0 rgba(0, 0, 0, 0.2)" }}>
                     <h1>Log In{loading && <Spinner />}</h1>
                     <form>
 

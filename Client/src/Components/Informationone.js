@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import swal from 'sweetalert';
 
 const Informationone = () => {
-    const [alert, setAlert] = useState({ text: "", bg: "" })
+
 
     const History = useNavigate()
     const [user, setUser] = useState({

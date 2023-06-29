@@ -4,31 +4,36 @@ import swal from 'sweetalert';
 import { NavLink } from "react-router-dom"
 import { useNavigate } from 'react-router-dom'
 import Spinner from './Spinner'
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import * as Yup from "yup"
 
-// import Informationone from './Informationone';
 const Login = () => {
     const History = useNavigate()
-    const [email, setEmail] = useState("");
-    useEffect(() => {
-        document.title = "Log In"
-    })
-    const [loading, setLoading] = useState(false)
-    const [password, setPassword] = useState("");
+    const validationSchema = Yup.object({
+        email: Yup.string().email("Invalid email").required("Please Enter Email"),
+        password: Yup.string().required("Please Enter Password"),
 
-    const loginUser = async (e) => {
-        e.preventDefault();
+    })
+
+    const initialValues = {
+        email: "",
+        password: "",
+    }
+
+    const onSubmit = async (values) => {
+        console.log("data", values)
 
         try {
 
             setLoading(true)
+            const { email, password } = values
             const res = await fetch("/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email,
-                    password,
+                    email, password
                 }),
             });
 
@@ -58,6 +63,7 @@ const Login = () => {
 
             }
         } catch (error) {
+            console.log(error)
             setLoading(false)
             swal({
                 title: "Oops...!",
@@ -69,27 +75,33 @@ const Login = () => {
 
 
         }
-    };
+    }
+    useEffect(() => {
+        document.title = "Log In"
+    })
+    const [loading, setLoading] = useState(false)
+
     return (
-        <div>
+        <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit} >
 
 
             <div className="container">
                 <div className="box" style={{ padding: '15px', boxShadow: "0 12px 16px 0 rgba(0, 0, 0, 0.2)" }}>
                     <h1>Log In{loading && <Spinner />}</h1>
-                    <form>
+                    <Form>
 
                         <label className="label1"> Email</label>
-                        <input type="email" className='inputtag' placeholder="Enter Email" name="email" onChange={(e) => {
-                            setEmail(e.target.value)
-                        }} />
-
+                        <Field type="email" className='inputtag' placeholder="Enter Email" name="email" />
+                        <div style={{ color: "red" }}><ErrorMessage name="email" /></div>
 
 
                         <label className="label1"> Enter Password</label>
-                        <input type="password" className='inputtag' placeholder="Enter Password" name="password" onChange={(e) => {
-                            setPassword(e.target.value)
-                        }} />
+                        <Field type="password" className='inputtag' placeholder="Enter Password" name="password" />
+                        <div style={{ color: "red" }}><ErrorMessage name="password" /></div>
+
                         <p >
                             <span style={{ color: "black" }}>
                                 {" "}
@@ -104,14 +116,14 @@ const Login = () => {
                         </NavLink>
 
                         <div class="button-container-div">
-                            <button onClick={loginUser}>Log IN</button>
+                            <button type="submit">Log IN</button>
                         </div>
-                    </form>
+                    </Form>
 
                 </div>
             </div>
             {/* //  : <Information email={email} />} */}
-        </div>
+        </Formik>
     )
 }
 

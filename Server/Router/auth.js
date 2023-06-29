@@ -48,6 +48,7 @@ router.post("/login", async (req, res) => {
         let token;
         const { email, password } = req.body;
 
+
         if (!email || !password) {
             return res.status(400).json({ error: "please filled the data" })
         }
@@ -72,6 +73,7 @@ router.post("/login", async (req, res) => {
                 res.status(200).json({ message: "Log in successfully" })
             }
             else {
+
 
 
                 res.status(400).json({ message: "Invalid Creadentials" })
@@ -120,9 +122,9 @@ router.get("/logout", async (req, res) => {
     res.status(200).send("user Logout")
 })
 router.post("/reset", async (req, res) => {
+
     try {
         const { email } = req.body;
-
 
         if (!email) {
 
@@ -162,7 +164,7 @@ router.post("/changepassword", async (req, res) => {
             res.status(404).json({ error: "Enter All Fields" })
         }
         let data = await otp.findOne({ email, Otp })
-    
+
         if (data) {
 
             let currTime = new Date().getTime()
@@ -173,6 +175,7 @@ router.post("/changepassword", async (req, res) => {
             }
             else {
                 const user = await User.findOne({ email })
+
                 user.password = password;
                 await user.save();
                 res.status(200).json({ message: "Your Password has been updated successfully" })

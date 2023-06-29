@@ -4,7 +4,7 @@ const user = require('../schema/userSchema')
 
 const Authenticate = async (req, res, next) => {
     try {
-     
+
 
         const token = req.cookies.jwt;
 
@@ -14,7 +14,7 @@ const Authenticate = async (req, res, next) => {
             throw new Error("User Not Found")
 
         }
-   req.token = token;
+        req.token = token;
         req.rootUser = rootUser;
         req.userId = rootUser._id;
 

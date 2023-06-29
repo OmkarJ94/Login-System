@@ -1,151 +1,169 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import * as Yup from "yup"
+import { useEffect } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom'
 import swal from 'sweetalert';
-import "./Signup.css"
 import Spinner from './Spinner'
 
-const Signup = () => {
-    const History = useNavigate()
-    useEffect(() => {
-        document.title = "Sign up"
-    })
-    const [loading, setLoading] = useState(false)
-    const [user, setUser] = useState({
-        name: "",
-        email: "",
-        dob: "",
-        age: "",
-        phone: "",
-        gender: "",
-        password: "",
-        cpassword: "",
+const SignupFormik = () => {
+  const History = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const showAlert = (message, bg) => {
 
-    })
-    const showAlert = (message, bg) => {
+    setTimeout(() => {
 
-        setTimeout(() => {
+    }, 3000);
+  }
 
-        }, 3000);
-    }
+  console.log("here")
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Please Enter Name"),
+    email: Yup.string().email("Invalid email").required("Please Enter Emails"),
+    dob: Yup.string().required("Please Enter Date Of Birth"),
+    age: Yup.string().required("Please Enter Age"),
+    phone: Yup.string().required("Please Enter Phone Number"),
+    gender: Yup.string().required("Please Enter Gender"),
+    password: Yup.string().required("Please Enter Password"),
+    cpassword: Yup.string().required("Please Re-Enter Password"),
+  })
 
+  const initialValues = {
+    name: "",
+    email: "",
+    dob: "",
+    age: "",
+    phone: "",
+    gender: "",
+    password: "",
+    cpassword: "",
+  }
+  const onSubmit = async (values) => {
+    console.log("data", values)
+    try {
+      const { name, email, dob, age, phone, gender, password, cpassword } = values;
+      if (password !== cpassword) {
 
-    const submitData = async (e) => {
+        showAlert("Invalid Creadential", "#FFBABA")
+      }
+      else {
 
-        e.preventDefault();
-        try {
-            const { name, email, dob, age, phone, gender, password, cpassword } = user;
-            if (password !== cpassword) {
+        setLoading(true)
+        const res = await fetch("/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            dob,
+            age,
+            phone,
+            gender,
+            password,
+            cpassword,
+          }),
+        });
+        // eslint-disable-next-line
+        const result = await res.json();
 
-                showAlert("Invalid Creadential", "#FFBABA")
-            }
-            else {
+        if (res.status !== 201 || !res) {
+          setLoading(false)
+          showAlert("Invalid Creadential", "#FFBABA")
+          swal({
+            title: "Invalid Creadential",
+            text: "Please Enter Valid Data",
+            icon: "error",
+          })
+        } else {
+          setLoading(false)
 
-                setLoading(true)
-                const res = await fetch("/signup", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        name,
-                        email,
-                        dob,
-                        age,
-                        phone,
-                        gender,
-                        password,
-                        cpassword,
-                    }),
-                });
-                // eslint-disable-next-line
-                const result = await res.json();
-
-                if (res.status !== 201 || !res) {
-                    setLoading(false)
-                    showAlert("Invalid Creadential", "#FFBABA")
-                    swal({
-                        title: "Invalid Creadential",
-                        text: "Please Enter Valid Data",
-                        icon: "error",
-                    })
-                } else {
-                    setLoading(false)
-
-                    swal({
-                        title: "Registeration succesfull",
-                        text: "Thank You",
-                        icon: "success",
-                    })
-                    History("/login");
-                    showAlert("Registeration succesfull", "#DFF2BF")
-
-                }
-            }
-        } catch (error) {
-            setLoading(false)
-            showAlert("Invalid Creadential", "#FFBABA")
+          swal({
+            title: "Registeration succesfull",
+            text: "Thank You",
+            icon: "success",
+          })
+          History("/login");
+          showAlert("Registeration succesfull", "#DFF2BF")
 
         }
-    };
+      }
+    } catch (error) {
+      setLoading(false)
+      showAlert("Invalid Creadential", "#FFBABA")
 
-    const handleInputs = (e) => {
-        let name, value;
-        name = e.target.name;
-        value = e.target.value;
-        setUser({ ...user, [name]: value });
     }
+  }
+  return (
 
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit} >
+      <div className="container">
+        <div className="box" style={{ padding: '15px', boxShadow: "0 12px 16px 0 rgba(0, 0, 0, 0.2)" }}>
 
-    return (
-        <>
+          <h1>Sign Up{loading && <Spinner />}</h1>
+          <Form>
+            <label className="label1"> Name</label>
+            <Field type="text" className='inputtag' placeholder="Enter Name" name="name" />
+            <br />
+            <div style={{ color: "red" }}><ErrorMessage name="name" /></div>
 
-            <div className="container">
-                <div className="box" style={{ padding: '15px', boxShadow: "0 12px 16px 0 rgba(0, 0, 0, 0.2)" }}>
+            <label className="label1"> Email</label>
+            <Field type="email" className='inputtag' placeholder="Enter Email" name="email" />       <br />
+            <div style={{ color: "red" }}><ErrorMessage name="email" /></div>
 
-                    <h1>Sign Up{loading && <Spinner />}</h1>
-                    <form>
-                        <label className="label1"> Name</label>
-                        <input type="text" className='inputtag' placeholder="Enter Name" name="name" value={user.name} onChange={handleInputs} />
-                        <label className="label1"> Email</label>
-                        <input type="email" className='inputtag' placeholder="Enter Email" name="email" value={user.email} onChange={handleInputs} />
-                        <label className="label1">Date Of Birth</label>
-                        <input type="date" className='inputtag' placeholder="Enter Date Of Birth" name="dob" value={user.dob} onChange={handleInputs} />
-                        <label className="label1">Age</label>
-                        <input type="number" className='inputtag' placeholder="Enter age" name="age" value={user.age} onChange={handleInputs} />
-                        <label className="label1"> Phone</label>
-                        <input type="tel" className='inputtag' placeholder="Enter Phone" name="phone" value={user.phone} onChange={handleInputs} />
-                        <label className="label1"> Gender</label>
-                        <input type="radio" name="gender" onChange={handleInputs} value="male" />
-                        <label>Male</label>
-                        &nbsp;
-                        <input type="radio" name="gender" onChange={handleInputs} value="female" />
-                        <label>Female</label>
-                        &nbsp;
-                        <input type="radio" name="gender" onChange={handleInputs} value="other" />
-                        <label>Other</label>
-                        <label className="label1"> Enter Password</label>
-                        <input type="password" className='inputtag' placeholder="Enter Password" name="password" value={user.password} onChange={handleInputs} />
-                        <label className="label1"> confirm Password</label>
-                        <input type="password" className='inputtag' placeholder="Conform Password" name="cpassword" value={user.cpassword} onChange={handleInputs} />
-                        <p >
-                            <span style={{ color: "black" }}>
-                                {" "}
-                                Already Account?
-                            </span>
-                            <NavLink to="/login" style={{ color: "red" }}>
-                                Log IN
-                            </NavLink>
-                        </p>
+            <label className="label1">Date Of Birth</label>
+            <Field type="date" className='inputtag' placeholder="Enter Date Of Birth" name="dob" />       <br />
+            <div style={{ color: "red" }}><ErrorMessage name="dob" /></div>
 
-                        <div class="button-container-div">
-                            <button onClick={submitData}>Submit</button>
-                        </div>
-                    </form>
+            <label className="label1">Age</label>
+            <Field type="number" className='inputtag' placeholder="Enter age" name="age" />       <br />
+            <div style={{ color: "red" }}><ErrorMessage name="age" /></div>
 
-                </div>
+            <label className="label1"> Phone</label>
+            <Field type="tel" className='inputtag' placeholder="Enter Phone" name="phone" />       <br />
+            <div style={{ color: "red" }}><ErrorMessage name="phone" /></div>
+
+            <label className="label1"> Gender</label>
+            <Field type="radio" name="gender" value="male" />
+            <label>Male</label>
+            &nbsp;
+            <Field type="radio" name="gender" value="female" />
+            <label>Female</label>
+            &nbsp;
+            <Field type="radio" name="gender" value="other" />
+            <label>Other</label>       <br />
+            <div style={{ color: "red" }}><ErrorMessage name="gender" /></div>
+
+            <label className="label1"> Enter Password</label>
+            <Field type="password" className='inputtag' placeholder="Enter Password" name="password" />       <br />
+            <div style={{ color: "red" }}><ErrorMessage name="password" /></div>
+
+            <label className="label1"> confirm Password</label>
+            <Field type="password" className='inputtag' placeholder="Conform Password" name="cpassword" />       <br />
+            <div style={{ color: "red" }}><ErrorMessage name="cpassword" /></div>
+            <p >
+              <span style={{ color: "black" }}>
+                {" "}
+                Already Account?
+              </span>
+              <NavLink to="/login" style={{ color: "red" }}>
+                Log IN
+              </NavLink>
+            </p>
+
+            <div className="button-container-div">
+              <button type="submit">Submit</button>
             </div>
-        </>
-    )
+          </Form>
+
+        </div>
+      </div>
+    </Formik>
+  )
 }
 
-export default Signup
+export default SignupFormik

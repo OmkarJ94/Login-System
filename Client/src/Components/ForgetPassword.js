@@ -1,22 +1,36 @@
-import React, { useState,useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import swal from 'sweetalert';
 import ConfirmedPassword from "./ConfirmedPassword";
 import Spinner from "./Spinner";
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import * as Yup from "yup"
 
 const Changepassword = () => {
-    const [email, setEmail] = useState();
     const [loading, setLoading] = useState(false);
     const [form, setform] = useState(true);
+    const [email, setEmail] = useState();
     useEffect(() => {
         document.title = "Forgot Password"
     })
     const History = useNavigate();
-    const checkUser = async (e) => {
-        e.preventDefault();
+
+    const validationSchema = Yup.object({
+        email: Yup.string().email("Invalid email").required("Please Enter Email"),
+
+    })
+
+    const initialValues = {
+        email: "",
+    }
+
+    const onSubmit = async (values) => {
+        
         try {
-   
+
             setLoading(true);
+            const { email } = values
+            setEmail(email)
             const res = await fetch("/reset", {
                 method: "POST",
                 headers: {
@@ -48,6 +62,7 @@ const Changepassword = () => {
                 setform(false);
             }
         } catch (error) {
+            
             setLoading(false);
 
             swal({
@@ -57,9 +72,18 @@ const Changepassword = () => {
             })
 
         }
+    }
+
+
+    const checkUser = async (e) => {
+        e.preventDefault();
+
     };
     return (
-        <>
+        <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit} >
             {form ? (
                 <div className="container">
                     <ol>
@@ -69,23 +93,17 @@ const Changepassword = () => {
                         <li>Enter your email address below.</li>
                         <li>Our system will send you a OTP.</li>
                         <li>Use the OTP to reset your password.</li>
-                        <form>
+                        <Form>
 
                             <label className="label1"> Email</label>
-                            <input type="email" className='inputtag' placeholder="Enter Email" name="email" onChange={(e) => {
-                                setEmail(e.target.value)
-                            }} />
-
-
-
-
-
-                            <div class="button-container-div" >
-                                <button onClick={checkUser}>Get OTP</button>
+                            <Field type="email" className='inputtag' placeholder="Enter Email" name="email" />
+                            <div style={{ color: "red" }}><ErrorMessage name="email" /></div>
+                            <div className="button-container-div" >
+                                <button type="submit">Get OTP</button>
                                 <button style={{ marginLeft: "4px" }} onClick={() => { History("/login") }}>Back to Login</button>
                             </div>
 
-                        </form>
+                        </Form>
 
                     </div>
                 </div>
@@ -96,78 +114,7 @@ const Changepassword = () => {
 
                 )
             }
-            {/* //  : <Information email={email} />} */}
-
-            {/* <div class="container padding-bottom-3x mb-2 mt-5">
-                <div class="row justify-content-center">
-                    {form ? (
-                        <div class="col-lg-8 col-md-10">
-                            <div class="forgot">
-                                <h2>Forgot your password?</h2>
-
-                                <ol class="list-unstyled">
-                                    <li>
-                                        <span class="text-primary text-medium">1. </span>Enter your
-                                        email address below.
-                                    </li>
-                                    <li>
-                                        <span class="text-primary text-medium">2. </span>Our system
-                                        will send you a OTP
-                                    </li>
-                                    <li>
-                                        <span class="text-primary text-medium">3. </span>Use the OTP
-                                        to reset your password
-                                    </li>
-                                </ol>
-                            </div>
-                            {loading && <Spinner />}
-                            <form class="card mt-4">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        {" "}
-                                        <label for="email-for-pass">
-                                            Enter your email address
-                                        </label>{" "}
-                                        <input
-                                            class="form-control"
-                                            type="email"
-                                            id="email-for-pass"
-                                            value={email}
-                                            onChange={(e) => {
-                                                setEmail(e.target.value);
-                                            }}
-                                        />
-                                        <small class="form-text text-muted">
-                                            Enter the email address you used during the registration
-                                        </small>{" "}
-                                        <br />
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    {" "}
-                                    <button class="btn btn-success" onClick={checkUser}>
-                                        Send OTP
-                                    </button>{" "}
-                                    <button class="btn btn-danger" type="submit">
-                                        <NavLink
-                                            to="/"
-                                            style={{ textDecoration: "none", color: "white" }}
-                                            onClick={() => {
-                                                History("/");
-                                            }}
-                                        >
-                                            Back to Login
-                                        </NavLink>
-                                    </button>{" "}
-                                </div>
-                            </form>
-                        </div>
-                    ) : (
-                        <ConfirmedPassword email={email} />
-                    )}
-                </div>
-            </div> */}
-        </>
+        </Formik>
     );
 };
 
